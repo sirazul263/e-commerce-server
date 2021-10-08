@@ -1,16 +1,20 @@
 const express = require("express");
 const env = require("dotenv");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+app.use(express.json());
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// );
 //Routes
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin/auth");
+const categoryRoutes = require("./routes/category");
+const productRoutes = require("./routes/product");
+const cartRoutes = require("./routes/cart");
 env.config();
 
 //Database Connection
@@ -27,6 +31,10 @@ mongoose
     console.log("Database Connected");
   });
 app.use("/api", authRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
+app.use("/api", cartRoutes);
 //Server Listening
 app.listen(process.env.PORT, () => {
   console.log("Server is running");

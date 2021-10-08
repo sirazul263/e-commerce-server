@@ -1,13 +1,12 @@
-const User = require("../models/user");
+const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
-const { validationResult } = require("express-validator");
 exports.signup = (req, res) => {
   User.findOne({
     email: req.body.email,
   }).exec((error, user) => {
     if (user) {
       return res.status(400).json({
-        message: "User already exits",
+        message: "Admin already exits",
       });
     }
     const { _id, firstName, lastName, email, password } = req.body;
@@ -18,6 +17,7 @@ exports.signup = (req, res) => {
       email,
       password,
       userName: Math.random().toString(),
+      role: "admin",
     });
 
     _user.save((error, data) => {
@@ -28,7 +28,7 @@ exports.signup = (req, res) => {
       }
       if (data) {
         return res.status(201).json({
-          message: "User created successfully",
+          message: "Admin created successfully",
         });
       }
     });
@@ -41,7 +41,7 @@ exports.signin = (req, res) => {
       return res.status(400).json({ error });
     }
     if (user) {
-      if (user.authenticate(req.body.password)) {
+      if (user.authenticate(req.body.password) && user.role === "admin") {
         const token = jwt.sign(
           { _id: user._id, role: user.role },
           process.env.JWT_TOKEN,
@@ -70,10 +70,4 @@ exports.signin = (req, res) => {
       return res.status(400).json({ message: "Something went wrong" });
     }
   });
-};
-exports.requireSignin = (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const user = jwt.verify(token, process.env.JWT_TOKEN);
-  req.user = user;
-  next();
 };
