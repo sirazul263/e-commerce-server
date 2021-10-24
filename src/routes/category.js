@@ -2,7 +2,12 @@ const express = require("express");
 const { requireSignin, adminMiddleware } = require("../common-middleware");
 const router = express.Router();
 
-const { addCategory, getCategories } = require("../controllers/category");
+const {
+  addCategory,
+  getCategories,
+  updateCategories,
+  deleteCategories,
+} = require("../controllers/category");
 const multer = require("multer");
 const shortId = require("shortid");
 const path = require("path");
@@ -25,5 +30,12 @@ router.post(
   upload.single("categoryImage"),
   addCategory
 );
+router.post(
+  "/category/update",
+  upload.array("categoryImage"),
+  updateCategories
+);
+router.post("/category/delete", deleteCategories);
+
 router.get("/category/getcategory", getCategories);
 module.exports = router;
